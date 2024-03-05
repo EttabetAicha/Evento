@@ -16,9 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'user.index');
 Route::view('/login','auth.form');
+Route::view('/dashboard','admin.dashboard');
 
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
