@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\JwtAuthVal;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,5 +22,6 @@ Route::view('/dashboard','admin.dashboard');
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
-
+Route::middleware(JwtAuthVal::class)->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});

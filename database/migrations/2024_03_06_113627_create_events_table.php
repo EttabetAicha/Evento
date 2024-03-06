@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->string('images');
             $table->dateTime('date');
             $table->string('location');
             $table->unsignedInteger('category_id');

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'description', 'date', 'location', 'category_id', 'available_seats'];
+    protected $fillable = ['title', 'description','images', 'date', 'location', 'category_id', 'available_seats'];
 
     public function reservations()
     {
