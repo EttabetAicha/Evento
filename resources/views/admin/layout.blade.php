@@ -58,15 +58,16 @@
                             <span class="hide-menu">Services</span>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="{{ url('/emails') }}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{ url('event') }}" aria-expanded="false">
                                 <span>
                                     <i class="ti ti-article"></i>
                                 </span>
                                 <span class="hide-menu">Events</span>
                             </a>
                         </li>
+
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="{{ url('/newsletter') }}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{ url('/category') }}" aria-expanded="false">
                                 <span>
                                     <i class="ti ti-alert-circle"></i>
                                 </span>
@@ -74,7 +75,7 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="{{ url('/category') }}" aria-expanded="false">
+                            <a class="sidebar-link" href="{{ url('/user') }}" aria-expanded="false">
                                 <span>
                                     <i class="ti ti-cards"></i>
                                 </span>
