@@ -1,106 +1,170 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Illuminate\Http\Request;
 use App\Models\Event;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class EventController extends Controller
 {
-    public function index()
-    {
-        $events = Event::all();
-        $categories = Category::all();
-        return view('admin.events', [
-            'events' => $events,
-            'categories' => $categories,
-        ]);
-
+    //
+    protected $event;
+    protected $category;
+    public function __construct(){
+        $this->event = new Event();
+        $this->category = new Category();
     }
 
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'date' => 'required|date',
-            'location' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
-            'available_seats' => 'required|integer|min:0',
-            'images' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    public function eventpage(){
+        $events = DB::table('events')
+                ->join('categories', 'events.category_id', '=', 'categories.id')
+                ->select('events.*', 'categories.id as category_idd' , 'categories.name as category_name')
+                ->orderBy('events.updated_at', 'desc')
+                ->paginate(10);
 
-        $image = $request->file('images');
-        $imageName = time() . '_' . $image->getClientOriginalName();
-        $image->move(public_path('images'), $imageName);
-
-        $validatedData['images'] = $imageName;
-
-        $event = Event::create($validatedData);
-
-        return redirect('/event');
+        $categories = $this->category->all();
+        $count = $this->event->count();
+        return view('dashboard.layouts.eventadmin' , compact('count', 'events' , 'categories'));
     }
 
-    public function show($id)
-    {
-        $event = Event::findOrFail($id);
-        return redirect('/event');
+    public function eventpageorg(){
+        $events = DB::table('events')
+                    ->join('categories', 'events.category_id', '=', 'categories.id')
+                    ->select('events.*', 'categories.id as category_idd', 'categories.name as category_name')
+                    ->where('events.user_id', '=', Session::get('user_id'))
+                    ->orderBy('events.updated_at', 'desc')
+                    ->paginate(10);
+
+        $categories = $this->category->all();
+        $count = $this->event->count();
+        return view('dashboard.layouts.event' , compact('count', 'events' , 'categories'));
     }
 
-    public function update(Request $request, $id)
+
+    public function addevent(Request $request)
     {
-        $event = Event::findOrFail($id);
-
-        $validatedData = $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'date' => 'required|date',
-            'location' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
-            'available_seats' => 'required|integer|min:0',
-            'images' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('images')) {
-            $image = $request->file('images');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('images'), $imageName);
-            $validatedData['images'] = $imageName;
+        $this->validate($request, [
+            'title' => 'required',
+            'description' => 'required',
+            'date' => 'required',
+            'time' =>'required|date_format:H:i', 
+            'location' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'price' => 'required',
+            'total_places' => 'required',
+            'duration' => 'required',
+        ]); 
+        
+    
+        if ($request->hasFile('image')) {
+            $imageName = uniqid().'.'.$request->image->extension();
+            $request->image->move(public_path('assets/images'), $imageName); 
+        } else {
+            return redirect()->back()->with('delmsg', 'Image upload failed.');
         }
+    
+        $event = $this->event; 
+        $event->image = $imageName; 
+        $event->title = $request->title;
+        $event->description = $request->description;
+        $event->location = $request->location;
+        $event->date = $request->date;
+        $event->time = $request->time;
+        $event->duration = $request->duration;
+        $event->price = $request->price;
+        $event->acceptation = $request->acceptation;
+        $event->total_places = $request->total_places;
+        $event->user_id = Session::get('user_id');
+        $event->category_id = $request->category;
+        $event->save();
+    
+        return redirect('/eventpage')->with('msg', 'Event added successfully.');
+    }
 
-        $event->update($validatedData);
 
-        return redirect('event')->with('success', 'Event updated successfully.');
+    public function EditEvent(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required', 
+            'title' => 'required',
+            'description' => 'required',
+            'date' => 'required',
+            'location' => 'required',
+            'price' => 'required',
+            'total_places' => 'required',
+            'duration' => 'required',
+        ]);     
+    
+        $event = $this->event->find($request->id);
+        if (!empty($event)) {        
+    
+            if ($request->hasFile('image')) {
+                $imageName = uniqid().'.'.$request->image->extension();
+                $request->image->move(public_path('assets/images'), $imageName); 
+                $event->image = $imageName; 
+            } elseif (!empty($event->image)) {
+               
+                $imageName = $event->image;
+            }
+    
+            $event->title = $request->title;
+            $event->description = $request->description;
+            $event->location = $request->location;
+            $event->date = $request->date;
+            $event->time = $request->time;
+            $event->duration = $request->duration;
+            $event->price = $request->price;
+            $event->total_places = $request->total_places;
+            $event->category_id = $request->category;
+            $event->acceptation = $request->acceptation;
+            $event->save();
+    
+            return redirect('/eventpage')->with('msg', 'Event updated successfully.');
+        } else {
+
+            return redirect()->back()->with('delmsg', 'Event not found.');
+        }
+    }
+    
+    
+    public function ArchivEvent($id){
+        $event = $this->event->find($id);
+        $event->status = 4;
+        $event->update();
+        return redirect('/eventpage')->with('delmsg', 'Event Archived with successfully.');
+    }
+    public function ArchivEventOrg($id){
+        $event = $this->event->find($id);
+        $event->status = 1;
+        $event->update();
+        return redirect('/eventpageorg')->with('delmsg', 'Event Archived with successfully.');
+    }
+    public function unarchiveorg($id){
+        $event = $this->event->find($id);
+        $event->status = 0;
+        $event->update();
+        return redirect('/eventpageorg')->with('delmsg', 'Event Archived with successfully.');
     }
 
 
 
-    public function destroy($id)
-    {
-
-        $event = Event::findOrFail($id);
-        $event->delete();
-
-        return redirect('event')->with('success', 'event updated successfully.');
+    public function AcceptEvent($id){
+        $event = $this->event->find($id);
+        $event->status = 2;
+        $event->update();
+        return redirect('/eventpage')->with('msg', 'Event Accepted with successfully.');
     }
-    public function filterByDate(Request $request)
-    {
-        $validatedData = $request->validate([
-            'date' => 'required|date',
-        ]);
-
-        $events = Event::whereDate('date', $validatedData['date'])->get();
-
-        return redirect('event')->with('success', 'event updated successfully.');    }
-
-    public function filterByLocation(Request $request)
-    {
-        $validatedData = $request->validate([
-            'location' => 'required|string',
-        ]);
-
-        $events = Event::where('location', $validatedData['location'])->get();
-
-        return redirect('event')->with('success', 'event updated successfully.');
+    
+    public function RejectEvent($id){
+        $event = $this->event->find($id);
+        $event->status = 3;
+        $event->update();
+        return redirect('/eventpage')->with('delmsg', 'Event Rejected with successfully.');
     }
-}
+
+
+
+}   

@@ -3,58 +3,84 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
+    //
+    protected $category;
+    public function __construct(){
 
-        $categories = Category::all();
-        return view('admin.category', compact('categories'));
+        $this->category = new  Category ();
+
+    }
+    public function categorypage(){
+        $categories = $this->category->paginate(10);
+        $count = count($categories);
+        return view('dashboard.layouts.category' , compact('categories' , 'count') ) ;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function addcategory(Request $request)
     {
-        $request->validate([
-            'name' => 'required|unique:categories|max:255',
+        $this->validate($request, [
+            'name' =>'required|unique:categories,name'
         ]);
 
-        Category::create($request->all());
-
-        return redirect()->route('category.index')
-            ->with('success', 'Category created successfully.');
+        $this->category->name = $request->name;
+        $this->category->save();
+        return redirect()->back()->with('msg', 'Category Added with Successfully');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Category $category)
+    public function categorydelete($id)
     {
-        $request->validate([
-            'name' => 'required|unique:categories,name,' . $category->id . '|max:255',
-        ]);
-
-        $category->update($request->all());
-
-        return redirect()->route('category.index')
-            ->with('success', 'Category updated successfully');
+        $this->category->find($id)->delete();
+        return redirect()->back()->with('delmsg', 'Category Deleted Successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Category $category)
+
+    public function categoryedit(Request $request)
     {
-        $category->delete();
+        try{
+            $this->validate($request, [
+                'name' => 'required|unique:categories,name,' . $request->id,
+            ]);
+            
+            $category = $this->category->find($request->id);
+            
+            $category->name = $request->name;
+            $category->save();
 
-        return redirect()->route('category.index')
-            ->with('success', 'Category deleted successfully');
+            return redirect()->back()->with('msg', 'Category Updated Successfully');
+            }
+        
+        catch (\Exception $e){
+            return redirect()->back()->with('delmsg', 'Something went wrong');
+        }
     }
+
+
+
+   
+
+    public function EventsByCategory($categoryId, $textsearch)
+    {   
+        $events = Event::query();
+
+        if ($categoryId != 0) {
+            $events->where('category_id', $categoryId);
+        }
+
+        if ($textsearch != 0) {
+            $events->where('title', 'like', '%' . $textsearch . '%')
+            ->orWhere('description', 'like', '%'. $textsearch. '%');;
+        }
+        $events = $events->latest()->get();
+
+        
+        return view('user.search.bycategory', compact('events'));
+    }  
+
+
+
 }

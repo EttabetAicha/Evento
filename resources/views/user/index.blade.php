@@ -12,6 +12,7 @@
     <link href="assets/img/favicon.png" rel="icon">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
+
     <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Raleway:300,400,500,700,800"
@@ -28,6 +29,7 @@
 
     <!-- Main Stylesheet File -->
     <link href="assets/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/cardsyle.css">
 
     <!-- =======================================================
     Theme Name: TheEvent
@@ -57,12 +59,16 @@
                     <li><a href="#about">About</a></li>
                     <li><a href="#speakers">Speakers</a></li>
                     <li><a href="#schedule">Schedule</a></li>
-                    <li><a href="#venue">Venue</a></li>
+                    <li><a href="/reservation">My Reservation</a></li>
                     <li><a href="#hotels">Hotels</a></li>
                     <li><a href="#gallery">Gallery</a></li>
                     <li><a href="#supporters">Sponsors</a></li>
                     <li><a href="#contact">Contact</a></li>
-                    <li class="buy-tickets"><a href="{{ url('login') }}">Buy Tickets</a></li>
+                    @if (Session::has('user_id'))
+                        <li class="buy-tickets"><a href="/logout">Logout</a></li>
+                    @else
+                        <li class="buy-tickets"><a href="{{ url('login') }}">Login</a></li>
+                    @endif
                 </ul>
             </nav><!-- #nav-menu-container -->
         </div>
@@ -115,105 +121,71 @@
         <section id="speakers" class="wow fadeInUp">
             <div class="container">
                 <div class="section-header">
-                    <h2>Event Speakers</h2>
-                    <p>Here are some of our speakers</p>
+                    <h2>News events</h2>
+                    <p>Here are the last events</p>
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="speaker">
-                            <img src="assets/img/speakers/1.jpg" alt="Speaker 1" class="img-fluid">
-                            <div class="details">
-                                <h3><a href="speaker-details.html">Brenden Legros</a></h3>
-                                <p>Quas alias incidunt</p>
-                                <div class="social">
-                                    <a href=""><i class="fa fa-twitter"></i></a>
-                                    <a href=""><i class="fa fa-facebook"></i></a>
-                                    <a href=""><i class="fa fa-google-plus"></i></a>
-                                    <a href=""><i class="fa fa-linkedin"></i></a>
-                                </div>
+                    <div class="col-md-6">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="textsearch" placeholder="Search"
+                                aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <span class="input-group-text" style="cursor: pointer">
+                                    <!-- Bootstrap search icon -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                        <path
+                                            d="M10.68 9.57a4.5 4.5 0 1 0-1.11 1.11l3.63 3.63a1 1 0 0 0 1.41-1.41l-3.63-3.63a1 1 0 0 0-1.3-.1zm-.58 2.36a3.5 3.5 0 1 1 0-4.95 3.5 3.5 0 0 1 0 4.95z" />
+                                    </svg>
+                                </span>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="speaker">
-                            <img src="assets/img/speakers/2.jpg" alt="Speaker 2" class="img-fluid">
-                            <div class="details">
-                                <h3><a href="speaker-details.html">Hubert Hirthe</a></h3>
-                                <p>Consequuntur odio aut</p>
-                                <div class="social">
-                                    <a href=""><i class="fa fa-twitter"></i></a>
-                                    <a href=""><i class="fa fa-facebook"></i></a>
-                                    <a href=""><i class="fa fa-google-plus"></i></a>
-                                    <a href=""><i class="fa fa-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="speaker">
-                            <img src="assets/img/speakers/3.jpg" alt="Speaker 3" class="img-fluid">
-                            <div class="details">
-                                <h3><a href="speaker-details.html">Cole Emmerich</a></h3>
-                                <p>Fugiat laborum et</p>
-                                <div class="social">
-                                    <a href=""><i class="fa fa-twitter"></i></a>
-                                    <a href=""><i class="fa fa-facebook"></i></a>
-                                    <a href=""><i class="fa fa-google-plus"></i></a>
-                                    <a href=""><i class="fa fa-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="speaker">
-                            <img src="assets/img/speakers/4.jpg" alt="Speaker 4" class="img-fluid">
-                            <div class="details">
-                                <h3><a href="speaker-details.html">Jack Christiansen</a></h3>
-                                <p>Debitis iure vero</p>
-                                <div class="social">
-                                    <a href=""><i class="fa fa-twitter"></i></a>
-                                    <a href=""><i class="fa fa-facebook"></i></a>
-                                    <a href=""><i class="fa fa-google-plus"></i></a>
-                                    <a href=""><i class="fa fa-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="speaker">
-                            <img src="assets/img/speakers/5.jpg" alt="Speaker 5" class="img-fluid">
-                            <div class="details">
-                                <h3><a href="speaker-details.html">Alejandrin Littel</a></h3>
-                                <p>Qui molestiae natus</p>
-                                <div class="social">
-                                    <a href=""><i class="fa fa-twitter"></i></a>
-                                    <a href=""><i class="fa fa-facebook"></i></a>
-                                    <a href=""><i class="fa fa-google-plus"></i></a>
-                                    <a href=""><i class="fa fa-linkedin"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6">
-                        <div class="speaker">
-                            <img src="assets/img/speakers/6.jpg" alt="Speaker 6" class="img-fluid">
-                            <div class="details">
-                                <h3><a href="speaker-details.html">Willow Trantow</a></h3>
-                                <p>Non autem dicta</p>
-                                <div class="social">
-                                    <a href=""><i class="fa fa-twitter"></i></a>
-                                    <a href=""><i class="fa fa-facebook"></i></a>
-                                    <a href=""><i class="fa fa-google-plus"></i></a>
-                                    <a href=""><i class="fa fa-linkedin"></i></a>
-                                </div>
-                            </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select id="category-select" class="form-control">
+                                <option value="0" selected>Select category</option>
+                                <!-- Options will be added dynamically or through your backend -->
+                                @foreach ($ctrgs as $ctgr)
+                                    <option value="{{ $ctgr->id }}">{{ $ctgr->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
-            </div>
 
+              
+
+            </div>
         </section>
+        <ul  id="events-container"  class="cards">
+            @foreach ($events as $event)
+            <li>
+                <a href="" class="card">
+
+                    <img src="assets/images/{{ $event->image }}" class="card__image" alt="" />
+                    <div class="card__overlay">
+                        <div class="card__header">
+                            <svg class="card__arc" xmlns="http://www.w3.org/2000/svg">
+                                <path />
+                            </svg>
+                            <img class="card__thumb" src="https://i.imgur.com/7D7I6dI.png" alt="" />
+                            <div class="card__header-text">
+                                <h3 class="card__title">{{ $event->title }}</h3>
+                                <span class="card__status"> {{ \Carbon\Carbon::parse($event->date)->format('l, F j, Y') }}</span>
+                            </div>
+                        </div>
+                        <p class="card__description">{{ $event->description }}</p>
+                    </div>
+                </a>
+            </li>
+            @endforeach
+
+
+        </ul>
+
 
         <!--==========================
       Schedule Section
@@ -1176,6 +1148,43 @@
 
     <!-- Template Main Javascript File -->
     <script src="assets/js/main.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXxZ8SCZFbbFI1vUB4=" crossorigin="anonymous"></script>
+
+    <script>
+        jQuery(document).ready(function($) {
+            function handleSearch() {
+                var categoryId = $('#category-select').val();
+                var textsearch = $('#textsearch').val();
+
+                if (textsearch == "") {
+                    textsearch = 0;
+                }
+
+                console.log(textsearch);
+
+                if (categoryId) {
+                    $.ajax({
+                        url: '/categories/' + categoryId + '/events/' + textsearch,
+                        type: 'GET',
+                        dataType: 'html',
+                        success: function(eventsHtml) {
+                            $('#events-container').html(eventsHtml);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+                } else {
+                    console.error('No category data found');
+                }
+            }
+
+            $('#category-select').change(handleSearch);
+            $('#textsearch').on('input', handleSearch);
+        });
+    </script>
+
 </body>
 
 </html>

@@ -2,58 +2,144 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Event;
 use App\Models\Reservation;
+use Dompdf\Dompdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ReservationController extends Controller
 {
-    public function index()
+    //
+    protected $rese;
+    protected $event;
+    public function __construct()
     {
-        $reservations = Reservation::all();
-        return response()->json($reservations);
+        $this->rese = new Reservation();
+        $this->event = new Event();
+       
+        
+    } 
+    public function index(){
+        $user_id = Session::get('user_id');
+        $reservations = Reservation::select( 'events.id as id' , 'events.title as title'  , 'events.date as date' ,'events.acceptation as accepte', 'reservations.id as user_id' , 
+         'reservations.status as status'  )
+            ->join('events', 'reservations.event_id', '=', 'events.id')
+            ->join('users', 'reservations.user_id', '=', 'users.id')
+            ->where('users.id', $user_id)
+            ->orderBy('reservations.updated_at', 'desc')
+            ->get();
+        // dd($reservations);
+        return view('user.reservation' , compact('reservations'));
+    }
+    public function indexOrg(){
+        $user_id = Session::get('user_id');
+        $reservations = Reservation::select( 'events.id as id' ,'events.acceptation as accepte', 'events.title as title'  ,
+         'events.date as date' , 'reservations.id as user_id' ,  'reservations.status as status'
+         ,'reservations.fname as fname' ,  'reservations.lname as lname' , 'reservations.id as res_id')
+            ->join('events', 'reservations.event_id', '=', 'events.id')
+            ->join('users', 'events.user_id', '=', 'users.id')
+            ->where('users.id', $user_id)
+            ->orderBy('reservations.updated_at', 'desc')
+            ->get();
+
+        $count = $reservations->count();
+        
+        return view('dashboard.layouts.reservations' , compact('reservations' , 'count'));
     }
 
-    public function store(Request $request)
+
+
+
+    public function create(Request $request)
     {
-        $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'event_id' => 'required|exists:events,id',
-            'ticket_number' => 'nullable|string',
-            'status' => 'nullable|string',
-        ]);
 
-        $reservation = Reservation::create($validatedData);
+       
+        $rules = [
+            'fname' => 'required',
+            'lname' => 'required',
+        ];
 
-        return response()->json($reservation, 201);
+        if ($request->email === 'new') {
+            $rules['new_email'] = 'required|email';
+        } else {
+            $rules['email'] = 'required';
+        }
+
+        $this->validate($request, $rules);
+
+        $rescheck = $this->rese->where('user_id', Session::get('user_id'))
+          ->where('event_id', $request->event_id)
+          ->first();
+
+          if(empty($rescheck)) {
+ 
+
+        $reservation = $this->rese;;
+        $reservation->user_id =Session::get('user_id');
+        $reservation->event_id = $request->event_id;
+        
+        $reservation->fname = $request->fname;
+        $reservation->lname = $request->lname;
+
+        $reservation->email = ($request->email === 'new') ? $request->new_email : $request->email;
+
+        $reservation->save();
+
+        if ($reservation) {
+            $event = $this->event->find($request->event_id);
+            $event->increment('total_reservations');
+        }
+        
+        return redirect()->back()->with('success', 'Reservation successful.');
     }
-
-    public function show($id)
-    {
-        $reservation = Reservation::findOrFail($id);
-        return response()->json($reservation);
+    
+    else {
+        return redirect()->back()->with('error', 'You have already reserved this event.');
     }
+}
 
-    public function update(Request $request, $id)
-    {
-        $reservation = Reservation::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'event_id' => 'required|exists:events,id',
-            'ticket_number' => 'nullable|string',
-            'status' => 'nullable|string',
-        ]);
 
-        $reservation->update($validatedData);
 
-        return response()->json($reservation, 200);
-    }
 
-    public function destroy($id)
-    {
-        $reservation = Reservation::findOrFail($id);
-        $reservation->delete();
+public function generateTicket($id_event, $id_user)
+{
+    $event = Event::findOrFail($id_event);
 
-        return response()->json(['message' => 'Reservation deleted successfully']);
-    }
+    $reservator = Reservation::where('event_id', $id_event)
+        ->where('id', $id_user)
+        ->firstOrFail();
+
+   
+
+    $html = view('user.tickets.pdf',compact('event' , 'reservator'));
+
+    $pdf = new Dompdf();
+
+    $pdf->loadHtml($html);
+
+    $pdf->setPaper('A4', 'portrait');
+
+    $pdf->render();
+
+    return $pdf->stream("event_ticket_{$id_event}.pdf");
+}
+
+
+
+public function accept($id){
+    $reservation = $this->rese->find($id); 
+    $reservation->status = 1;
+    $reservation->save(); 
+    return redirect()->back()->with('success', 'Reservation accepted successfully');
+}
+
+public function reject($id){
+    $reservation = $this->rese->find($id); 
+    $reservation->status = 2;
+    $reservation->save(); 
+    return redirect()->back()->with('success', 'Reservation rejected successfully');
+}
+
 }
