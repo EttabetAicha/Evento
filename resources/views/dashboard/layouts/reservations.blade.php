@@ -7,7 +7,7 @@
         position: fixed;
         right: 4em;
         bottom: 4em;
-        
+
     }
     #addbtn img{
         width: 5em;
@@ -24,14 +24,14 @@
         transform: scale(1.1);
     }
 
-    
+
 </style>
 
     <!--  Header End -->
     <div class="container-fluid">
         <div class="card">
-                
-            
+
+
 
             @if (session('msg'))
                 <div class="alert alert-success" style="color: black">{{ session('msg') }}</div>
@@ -82,11 +82,11 @@
                                         <span class="badge bg-success  p-2 ">Complete</span>
                                     @elseif($res->status == 0)
                                         <span class="badge bg-warning p-2">Pending</span>
-                                    @else 
+                                    @else
                                         <span class="badge bg-danger p-2">Reject</span>
                                     @endif
                                 </td>
-                                
+
                                 <td>
                                     @if($res->status != 1 && $res->status !=2 && $res->accepte != 0)
                                         <a href="/accept/{{$res->res_id}}" type="button" class="btn btn-success btn-sm" title="Accept">
@@ -96,19 +96,19 @@
                                             <i class="fas fa-times"></i> Reject
                                         </a>
                                     @endif
-                                </td>                             
+                                </td>
 
                             </tr>
 
                         @empty
 
 
-                            <div
-                                style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; padding:3em ; opacity:0.4">
-                                <img src="https://static.vecteezy.com/system/resources/previews/021/745/881/original/sad-face-icon-sad-emotion-face-symbol-icon-unhappy-icon-vector.jpg"
-                                    alt="" style="width: 20%;" srcset="">
-                                <h3 style="margin-top: 2em">User List is empty</h3>
-                            </div>
+                        <div
+                        style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; padding:3em ; opacity:0.4">
+                        <img src="assets/img/empty.png"
+                            alt="" style="width: 20%;" srcset="">
+                        <h3 style="margin-top: 2em">Reservation List is empty</h3>
+                    </div>
                         @endforelse
                     </tbody>
                 </table>
@@ -119,10 +119,10 @@
         </div>
 
 
-   
 
-       
-       
+
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">

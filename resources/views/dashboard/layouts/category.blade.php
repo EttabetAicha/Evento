@@ -7,7 +7,7 @@
         position: fixed;
         right: 4em;
         bottom: 4em;
-        
+
     }
     #addbtn img{
         width: 5em;
@@ -24,17 +24,17 @@
         transform: scale(1.1);
     }
 
-    
+
 </style>
 <div id="addbtn">
-    <img src="assets/images/logos/plus.png" alt="" data-bs-toggle="modal"
+    <img src="assets/img/logo.png" alt="" data-bs-toggle="modal"
     data-bs-target="#AddEmail">
 </div>
     <!--  Header End -->
     <div class="container-fluid">
         <div class="card">
-                
-            
+
+
 
             @if (session('msg'))
                 <div class="alert alert-success" style="color: black">{{ session('msg') }}</div>
@@ -67,7 +67,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                </td>    
+                                </td>
 
                                 <td>
                                     @if ($category->created_at)
@@ -83,21 +83,21 @@
                                     <p class="text-muted mb-0">Time not available</p>
                                 @endif
                                                                 </td>
-                                
+
                                 <td>
-                                    <button type="button" class="btn btn-link btn-sm btn-rounded" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#DeleteEmail" 
+                                    <button type="button" class="btn btn-link btn-sm btn-rounded"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#DeleteEmail"
                                             data-category-id="{{ $category->id }}"
                                             data-category-name="{{ $category->name }}">
                                         <i class="bi bi-trash fs-4 text-danger"></i>
                                     </button>
                                     <button type="button" class="btn btn-link btn-sm btn-rounded" data-bs-toggle="modal" data-bs-target="#EditEmail{{ $category->id }}" >
-                                        <i class="bi bi-pencil fs-4"></i> 
+                                        <i class="bi bi-pencil fs-4"></i>
                                     </button>
                                 </td>
-                                
-                           
+
+
 
 
                             </tr>
@@ -114,35 +114,35 @@
                                         </div>
                                         <div class="modal-body">
                                             <form action="/categoryedit" method="post">
-                                                @csrf   
+                                                @csrf
                                                 <div class="mb-3">
                                                     <input type="hidden" value="{{ $category->id }}" name="id">
                                                     <label for="exampleTextInput" class="form-label">Category</label>
                                                     <br>
                                                     <input type="text" class="form-control" name="name"
-                                                    id="exampleTextInput" value="{{ $category->name }}">                                                      
-                                                </div>                                                    
+                                                    id="exampleTextInput" value="{{ $category->name }}">
+                                                </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-bs-dismiss="modal">Close</button>
                                             <button type="submit" class="btn btn-primary">Edit</button>
                                         </div>
-                    
+
                                         </form>
                                     </div>
                                 </div>
                             </div>
-                      
+
 
                         @empty
 
 
                             <div
                                 style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; padding:3em ; opacity:0.4">
-                                <img src="https://static.vecteezy.com/system/resources/previews/021/745/881/original/sad-face-icon-sad-emotion-face-symbol-icon-unhappy-icon-vector.jpg"
+                                <img src="assets/img/empty.png"
                                     alt="" style="width: 20%;" srcset="">
-                                <h3 style="margin-top: 2em">User List is empty</h3>
+                                <h3 style="margin-top: 2em">category List is empty</h3>
                             </div>
                         @endforelse
                     </tbody>
@@ -162,7 +162,7 @@
                         <h5 class="modal-title" id="exampleModalCenterTitle">Add Category</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">    
+                    <div class="modal-body">
                         <form action="/addcategory" method="post">
                             @csrf
                             <div class="mb-3">
@@ -206,7 +206,7 @@
             </div>
         </div>
 
-      
+
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -216,13 +216,13 @@
                     var categoryId = button.getAttribute('data-category-id');
                     var categoryName = button.getAttribute('data-category-name');
                     var deleteLink = '/categorydelete/' + categoryId;
-                    
+
                     modal.querySelector('#categoryName').innerText = categoryName;
                     modal.querySelector('#deleteCategoryLink').setAttribute('href', deleteLink);
                 });
             });
         </script>
-       
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
