@@ -3,18 +3,41 @@
 @section('content')
 
     <style>
-        #addbtn {
+         #addbtn {
             position: fixed;
             right: 4em;
             bottom: 4em;
             z-index: 2;
         }
 
+        .status-badge {
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .bg-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .bg-image img {
+            transition: transform 0.5s ease;
+        }
+
+        .bg-image:hover img {
+            transform: scale(1.05);
+        }
+
+
         #addbtn img {
             width: 5em;
             height: 5em;
-            border-radius: 50%;
-            box-shadow: 0px 0px 5px 2px black;
+            border-radius: 20%;
+            box-shadow: 0px 0px 5px 2px rgb(214, 213, 213);
             transition: 0.3s;
             opacity: 0.7;
             cursor: pointer;
@@ -28,22 +51,21 @@
 
         #event1 {
             background-color: rgb(255, 255, 255);
-            box-shadow: 2px 2px 5px .5px black;
+            box-shadow: 2px 2px 5px .3px rgb(194, 193, 193);
 
             transition: 0.3s;
         }
 
-        #event1:hover {
-            background-color: rgb(241, 245, 255);
-        }
+
 
         #msgtop {
             font-size: 15px;
             text-align: center;
             color: white;
             width: 30%;
-            margin-left: 1em;
-            border-radius: 10px 10px 0px 0px;
+            margin-left: 42em;
+
+            border-radius: 5px 5px 0px 0px;
         }
     </style>
 
@@ -67,21 +89,25 @@
                         <div class="row justify-content-center mb-3">
                             <div class="col-md-12 col-xl-10">
                                 @if ($event->status == 0)
-                                    <div id="msgtop" style="background-color: rgb(66, 95, 210);">Panding</div>
+                                    <div id="msgtop" class="status-badge" style="background-color: rgb(186, 19, 219);">
+                                        Pending</div>
                                 @elseif($event->status == 1 || $event->status == 4)
-                                    <div id="msgtop" style="background-color: rgb(190, 16, 132);"> Archeved</div>
+                                    <div id="msgtop" class="status-badge" style="background-color: rgb(190, 144, 16);">
+                                        Archived</div>
                                 @elseif($event->status == 2)
-                                    <div id="msgtop" style="background-color: rgb(74, 175, 15);">Actif</div>
+                                    <div id="msgtop" class="status-badge" style="background-color: rgb(74, 175, 15);">
+                                        Active</div>
                                 @elseif($event->status == 3)
-                                    <div id="msgtop" style="background-color: rgb(233, 34, 34);">Regected</div>
+                                    <div id="msgtop" class="status-badge" style="background-color: rgb(233, 34, 34);">
+                                        Rejected</div>
                                 @endif
-
                                 <div class="card shadow-0 border rounded-3" id="event1">
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-md-12 col-lg-3 col-xl-3 mb-4 mb-lg-0">
                                                 <div class="bg-image hover-zoom ripple rounded ripple-surface">
-                                                    <img src="assets/images/{{ $event->image }}" class="w-100" />
+                                                    <img src="assets/images/{{ $event->image }}" class="w-100"
+                                                        alt="Event Image" />
                                                     <a href="#!">
                                                         <div class="hover-overlay">
                                                             <div class="mask"
@@ -92,83 +118,58 @@
                                             </div>
                                             <div class="col-md-6 col-lg-6 col-xl-6">
                                                 <h5>{{ $event->title }}</h5>
-                                                <div class="d-flex flex-row">
-                                                    <div class="text-danger mb-1 me-2">
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
-                                                        <i class="fa fa-star"></i>
+                                                <div class="d-flex flex-row align-items-center mb-2">
+                                                    <div class="text-danger me-2">
+                                                        @for ($i = 0; $i < 4; $i++)
+                                                            <i class="fa fa-star"></i>
+                                                        @endfor
                                                     </div>
                                                 </div>
-
-                                                <p class="text-truncate mb-4 mb-md-0 "
-                                                    style="font-size: 1.2em ; color :black">
+                                                <p class="text-truncate mb-4 mb-md-0"
+                                                    style="font-size: 1.2em; color: black;">
                                                     {{ Str::limit($event->description, 120, '...') }}
                                                 </p>
-                                                <div class="mt-1 mb-0 text-muted small">
-                                                    <span>Location: {{ $event->location }}</span>
-                                                    <br>
-                                                    <span>Date : {{ $event->date }} </span>
-                                                    <br>
-                                                    <span>Time : {{ date('H:i', strtotime($event->time)) }} </span>
-                                                    <br>
-                                                    <span>duration : {{ $event->duration }} min</span>
-                                                    <br>
-                                                    <span>Total places:{{ $event->total_places }} </span>
-                                                    <br>
-                                                    <span>Total reservations : {{ $event->total_reservations }}</span>
-                                                    <br>
-                                                    <span>Total Places Available: :
-                                                        {{ $event->total_places - $event->total_reservations }}</span>
-                                                    <br>
-
+                                                <div class="mt-1 text-muted small">
+                                                    <span>Location: {{ $event->location }}</span><br>
+                                                    <span>Date: {{ $event->date }}</span><br>
+                                                    <span>Time: {{ date('H:i', strtotime($event->time)) }}</span><br>
+                                                    <span>Duration: {{ $event->duration }} min</span><br>
+                                                    <span>Total places: {{ $event->total_places }}</span><br>
+                                                    <span>Total reservations: {{ $event->total_reservations }}</span><br>
+                                                    <span>Total Places Available:
+                                                        {{ $event->total_places - $event->total_reservations }}</span><br>
                                                     @if ($event->acceptation == 1)
-                                                        <span>Acceptation : validation manuelle</span>
-                                                        <br>
+                                                        <span>Acceptation: validation manuelle</span><br>
                                                     @else
-                                                        <span>Acceptation : automatique des réservations</span>
+                                                        <span>Acceptation: automatique des réservations</span>
                                                     @endif
-
                                                 </div>
-
-
                                             </div>
                                             <div class="col-md-6 col-lg-3 col-xl-3 border-sm-start-none border-start">
-                                                <div class="d-flex flex-row align-items-center mb-1">
+                                                <div class="d-flex flex-row align-items-center mb-2">
                                                     @if ($event->price == 0)
-                                                        <h4 class="text-secondary mb-1 me-1">Free</h4>
+                                                        <h4 class="text-secondary me-1">Free</h4>
                                                     @else
-                                                        <h4 class="text-secondary mb-1 me-1">{{ $event->price }} DH</h4>
+                                                        <h4 class="text-danger me-1">{{ $event->price }} DH</h4>
                                                     @endif
                                                 </div>
-
-
-                                                <h6 class="text-success"></h6>
                                                 <div class="d-flex flex-column mt-4">
-                                                    <button class="btn btn-outline-primary btn-sm" type="button"
+                                                    <button class="btn btn-outline-primary btn-sm mb-2" type="button"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#detailEmail{{ $event->id }}">Details</button>
-
-                                                    @if ($event->status != 4)
-                                                        <button class="btn btn-warning btn-sm mt-2" type="button"
+                                                    <button class="btn btn-success btn-sm mb-2" type="button"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#EditEmail{{ $event->id }}">Edit</button>
+                                                    @if ($event->status != 1 && $event->status != 3 && $event->status != 4)
+                                                        <button class="btn btn-warning btn-sm mb-2" type="button"
                                                             data-bs-toggle="modal" data-bs-target="#DeleteEmail"
                                                             data-category-id="{{ $event->id }}"
                                                             data-category-name="{{ $event->title }}">Archive</button>
+                                                    @elseif($event->status != 3 && $event->status != 4)
+                                                        <a href="/unarchiveorg/{{ $event->id }}"
+                                                            class="btn btn-success btn-sm mb-2">Unarchive</a>
                                                     @endif
                                                 </div>
-
-
-                                                <div class="d-flex justify-content-end mt-6">
-                                                    <a href="/acceptevent/{{ $event->id }}"
-                                                        class="btn btn-success btn-circle me-2" type="button">
-                                                        <i class="bi bi-check-circle"></i>
-                                                    </a>
-                                                    <a href="/rejectevent/{{ $event->id }}"
-                                                        class="btn btn-danger btn-circle" type="button">
-                                                        <i class="bi bi-x-circle"></i>
-                                                    </a>
-                                                </div>
-
                                             </div>
                                         </div>
                                     </div>
