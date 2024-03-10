@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ForgotPassMail;
+use App\Models\Password_reset_token;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -106,7 +107,7 @@ class AuthController extends Controller
 
     public function forgotpage()
     {
-        return view('Auth.forgot');
+        return view('auth.forgot');
     }
 
     public function changepass($token)
@@ -146,17 +147,29 @@ class AuthController extends Controller
 
     public function checkemail(Request $request)
     {
-        $checkemail = $this->utilisateur->where('email', $request->email)->first();
+        $request->validate([
+            'email' => 'required|email',
+        ]);
 
-        if (!empty($checkemail)) {
-            $checkemail->remember_token = Str::random(60);
-            $checkemail->save();
+        // Find the user by email
+        $user = User::where('email', $request->email)->first();
 
-            Mail::to($checkemail->email)->send(new ForgotPassMail($checkemail));
-
-            return back()->with('msg', 'Check your email for the password reset link.');
-        } else {
-            return redirect('/resetpass')->with('msg', 'Email does not exist.');
+        if (!$user) {
+            return redirect()->back()->withErrors(['email' => 'User not found']);
         }
+
+        // Generate a token
+        $token = Str::random(60);
+
+        // Save or update the token in the database
+        Password_reset_token::updateOrCreate(
+            ['email' => $user->email],
+            ['token' => $token, 'created_at' => now()]
+        );
+
+        // Send email to the user with the reset link
+        Mail::to($user->email)->send(new ForgotPassMail( $user));
+
+        return redirect()->back()->with('success', 'Password reset link sent to your email.');
     }
 }

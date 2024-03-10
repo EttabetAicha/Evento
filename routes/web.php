@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'loginpage']); // Homepage
 Route::post('/register', [AuthController::class, 'Register']); // Register user
 Route::post('/login', [AuthController::class, 'Login']); // Login user
-Route::get('/forgot', [AuthController::class, 'forgotpage']); // Forgot password page
+Route::get('/forgetpassword', [AuthController::class, 'forgotpage']); // Forgot password page
 Route::get('/logout', [AuthController::class, 'logout']); // Logout user
-Route::get('/resetpass', [AuthController::class, 'forgotpage']); // Reset password page
+Route::post('/resetpass', [AuthController::class, 'forgotpage']); // Reset password page
 Route::get('/changepass/{token}', [AuthController::class, 'changepass']); // Change password page
 Route::post('/changepass/{token}', [AuthController::class, 'reset_pass']); // Reset password action
 Route::post('/checkemail', [AuthController::class, 'checkemail']); // Check email for password reset
